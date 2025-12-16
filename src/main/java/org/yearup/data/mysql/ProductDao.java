@@ -1,6 +1,7 @@
 package org.yearup.data.mysql;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.yearup.models.Product;
@@ -12,53 +13,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class ProductDao extends DaoBase implements org.yearup.data.ProductDao  {
+public class ProductDao extends DaoBase implements org.yearup.data.ProductDao {
+    private JdbcTemplate jdbcTemplate;
 
-    public ProductDao(DataSource dataSource)
-    {
+    public ProductDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         super(dataSource);
+        this.jdbcTemplate = jdbcTemplate;
 
     }
 
     @Override
-    public List<Product> search(Integer categoryId, BigDecimal minPrice, BigDecimal maxPrice, String subCategory)
-    {
+    public List<Product> search(Integer categoryId, BigDecimal minPrice, BigDecimal maxPrice, String subCategory) {
         List<Product> products = new ArrayList<>();
 
-        String sql = "SELECT * FROM products " +
-                "WHERE (category_id = ? OR ? = -1) " +
-                "   AND (price <= ? OR ? = -1) " +
-                "   AND (subcategory = ? OR ? = '') ";
+        //? = -1:ignore filter(sentinel val)
+        //put the ignores first so if val = -1 sql ignores filter completely, prevents invalid expressions from running
+        String statement = """
+                SELECT *
+                FROM products
+                WHERE (? = -1 OR category_id = ?)
+                AND (? = -1 OR price BETWEEN ? AND ?)
+                AND (? = '' OR subcategory = ?);""";
 
+        //here is where setting to the sentinel value is handled, if null sert ? = -1(ignore)
         categoryId = categoryId == null ? -1 : categoryId;
         minPrice = minPrice == null ? new BigDecimal("-1") : minPrice;
         maxPrice = maxPrice == null ? new BigDecimal("-1") : maxPrice;
         subCategory = subCategory == null ? "" : subCategory;
 
-        try (Connection connection = getConnection())
-        {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, categoryId);
-            statement.setInt(2, categoryId);
-            statement.setBigDecimal(3, minPrice);
-            statement.setBigDecimal(4, minPrice);
-            statement.setString(5, subCategory);
-            statement.setString(6, subCategory);
 
-            ResultSet row = statement.executeQuery();
+        //need to account for each placeholder(hence the repetiteveness)and make sure the order matches the query
+        return jdbcTemplate.query(statement, mapRow, categoryId, categoryId, maxPrice, minPrice, maxPrice, subCategory, subCategory);
 
-            while (row.next())
-            {
-                Product product = mapRow(row);
-                products.add(product);
-            }
-        }
-        catch (SQLException e)
-        {
-            throw new RuntimeException(e);
-        }
-
-        return products;
     }
 
     @Override
@@ -68,21 +54,17 @@ public class ProductDao extends DaoBase implements org.yearup.data.ProductDao  {
 
         String sql = "SELECT * FROM products WHERE category_id = ? ";
 
-        try (Connection connection = getConnection())
-        {
+        try (Connection connection = getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, categoryId);
 
             ResultSet row = statement.executeQuery();
 
-            while (row.next())
-            {
+            while (row.next()) {
                 Product product = mapRow(row);
                 products.add(product);
             }
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
@@ -91,37 +73,30 @@ public class ProductDao extends DaoBase implements org.yearup.data.ProductDao  {
 
 
     @Override
-    public Product getById(int productId)
-    {
+    public Product getById(int productId) {
         String sql = "SELECT * FROM products WHERE product_id = ?";
-        try (Connection connection = getConnection())
-        {
+        try (Connection connection = getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, productId);
 
             ResultSet row = statement.executeQuery();
 
-            if (row.next())
-            {
+            if (row.next()) {
                 return mapRow(row);
             }
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return null;
     }
 
     @Override
-    public Product create(Product product)
-    {
+    public Product create(Product product) {
 
         String sql = "INSERT INTO products(name, price, category_id, description, subcategory, image_url, stock, featured) " +
                 " VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 
-        try (Connection connection = getConnection())
-        {
+        try (Connection connection = getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
             statement.setString(1, product.getName());
             statement.setBigDecimal(2, product.getPrice());
@@ -146,17 +121,14 @@ public class ProductDao extends DaoBase implements org.yearup.data.ProductDao  {
                     return getById(orderId);
                 }
             }
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return null;
     }
 
     @Override
-    public void update(int productId, Product product)
-    {
+    public void update(int productId, Product product) {
         String sql = "UPDATE products" +
                 " SET name = ? " +
                 "   , price = ? " +
@@ -168,8 +140,7 @@ public class ProductDao extends DaoBase implements org.yearup.data.ProductDao  {
                 "   , featured = ? " +
                 " WHERE product_id = ?;";
 
-        try (Connection connection = getConnection())
-        {
+        try (Connection connection = getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, product.getName());
             statement.setBigDecimal(2, product.getPrice());
@@ -182,35 +153,28 @@ public class ProductDao extends DaoBase implements org.yearup.data.ProductDao  {
             statement.setInt(9, productId);
 
             statement.executeUpdate();
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void delete(int productId)
-    {
+    public void delete(int productId) {
 
         String sql = "DELETE FROM products " +
                 " WHERE product_id = ?;";
 
-        try (Connection connection = getConnection())
-        {
+        try (Connection connection = getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, productId);
 
             statement.executeUpdate();
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    protected static Product mapRow(ResultSet row) throws SQLException
-    {
+    protected RowMapper<Product> mapRow = (row, rowNum) -> {
         int productId = row.getInt("product_id");
         String name = row.getString("name");
         BigDecimal price = row.getBigDecimal("price");
@@ -222,5 +186,5 @@ public class ProductDao extends DaoBase implements org.yearup.data.ProductDao  {
         String imageUrl = row.getString("image_url");
 
         return new Product(productId, name, price, categoryId, description, subCategory, stock, isFeatured, imageUrl);
-    }
+    };
 }

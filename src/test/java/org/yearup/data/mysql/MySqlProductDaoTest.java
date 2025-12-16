@@ -3,6 +3,7 @@ package org.yearup.data.mysql;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.yearup.models.Product;
 
 import java.math.BigDecimal;
@@ -13,11 +14,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class MySqlProductDaoTest extends BaseDaoTestClass
 {
     private ProductDao dao;
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     public void setup()
     {
-        dao = new ProductDao(dataSource);
+        dao = new ProductDao(jdbcTemplate,dataSource);
     }
 
     @Test
