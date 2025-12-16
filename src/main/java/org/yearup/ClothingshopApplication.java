@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class EasyshopApplication
+public class ClothingshopApplication
 {
 
 
@@ -18,7 +18,7 @@ public class EasyshopApplication
         System.setProperty("username", args[0]);
         System.setProperty("password", args[1]);
 
-        SpringApplication.run(EasyshopApplication.class, args);
+        SpringApplication.run(ClothingshopApplication.class, args);
     }
 
 }

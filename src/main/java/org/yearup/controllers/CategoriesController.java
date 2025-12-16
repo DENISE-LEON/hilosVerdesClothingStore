@@ -17,7 +17,6 @@ import java.util.List;
 @RequestMapping("categories")
 //more info on cross origin
 //It allows JavaScript on https://domain-a.com to fetch data from https://domain-b.com, which browsers normally block
-
 @CrossOrigin
 public class CategoriesController
 {
@@ -29,7 +28,7 @@ public class CategoriesController
     // create an Autowired controller to inject the categoryDao and ProductDao
 
     // add the appropriate annotation for a get action
-    @GetMapping()
+    @GetMapping
     public List<Category> getAll()
     {
         // find and return all categories
@@ -49,26 +48,24 @@ public class CategoriesController
     @GetMapping("{categoryId}/products")
     public List<Product> getProductsById(@PathVariable int categoryId)
     {
-        // get a list of product by categoryId
         return null;
     }
 
     // add annotation to call this method for a POST action
-    // add annotation to ensure that only an ADMIN can call this function
     @PostMapping
-    @
+    // add annotation to ensure that only an ADMIN can call this function
     public Category addCategory(@RequestBody Category category)
     {
-        // insert the category
         return categoryDao.create(category);
     }
 
     // add annotation to call this method for a PUT (update) action - the url path must include the categoryId
+    @PutMapping("{id}")
     // add annotation to ensure that only an ADMIN can call this function
-
     public void updateCategory(@PathVariable int id, @RequestBody Category category)
     {
         // update the category by id
+        categoryDao.update(id, category);
     }
 
 

@@ -81,7 +81,7 @@ public class CategoryDao extends DaoBase implements org.yearup.data.CategoryDao 
     @Override
     public void update(int categoryId, Category category) {
         String statement = """
-                UPDATE Category
+                UPDATE Categories
                 SET
                 name = ?,
                 description = ?
