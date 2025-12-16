@@ -20,12 +20,16 @@ import java.util.List;
 //cross origin allows JavaScript on https://domain-a.com to fetch data from https://domain-b.com, which browsers normally block
 @CrossOrigin
 public class CategoriesController {
-    @Autowired
     private IcategoryDao categoryDao;
-    //add autowired annotation
-    @Autowired
     private ProductDao productDao;
 
+    //even though field injection works in my case(small project, no unit testing)
+    // constructor injection is best practice( good for testing and long term maintainability)
+    @Autowired
+    public CategoriesController(IcategoryDao categoryDao, ProductDao productDao) {
+        this.categoryDao = categoryDao;
+        this.productDao = productDao;
+    }
 
     // add the appropriate annotation for a get action
     @GetMapping
