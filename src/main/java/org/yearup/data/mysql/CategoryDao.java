@@ -5,17 +5,16 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.yearup.data.IcategoryDao;
 import org.yearup.models.Category;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
 @Repository
-public class CategoryDao extends DaoBase implements org.yearup.data.CategoryDao {
+public class CategoryDao extends DaoBase implements IcategoryDao {
     private final JdbcTemplate template;
 
     // @Autowired
@@ -99,6 +98,11 @@ public class CategoryDao extends DaoBase implements org.yearup.data.CategoryDao 
     @Override
     public void delete(int categoryId) {
         // delete category
+        String statement = """
+                DELETE FROM Categories
+                WHERE category_id = ?;
+                """;
+        template.update(statement, categoryId);
     }
 
     public RowMapper<Category> categoryRowMapper = (resultSet, rowNum) -> {

@@ -2,6 +2,7 @@ package org.yearup.data.mysql;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.yearup.models.Product;
 
 import javax.sql.DataSource;
@@ -10,9 +11,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
-public class ProductDao extends DaoBase implements org.yearup.data.ProductDao
-{
+@Repository
+public class ProductDao extends DaoBase implements org.yearup.data.ProductDao  {
+
     public ProductDao(DataSource dataSource)
     {
         super(dataSource);
@@ -61,12 +62,11 @@ public class ProductDao extends DaoBase implements org.yearup.data.ProductDao
     }
 
     @Override
-    public List<Product> listByCategoryId(int categoryId)
-    {
+    public List<Product> listByCategoryId(int categoryId) {
+
         List<Product> products = new ArrayList<>();
 
-        String sql = "SELECT * FROM products " +
-                    " WHERE category_id = ? ";
+        String sql = "SELECT * FROM products WHERE category_id = ? ";
 
         try (Connection connection = getConnection())
         {
