@@ -56,6 +56,7 @@ public class CategoryDao extends DaoBase implements IcategoryDao {
                 VALUES (NULL, ?, ?);
                 """;
 
+        //keyholder is interface that stores keys, generated keyholder is an implememntation of keyholder interface
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
 
