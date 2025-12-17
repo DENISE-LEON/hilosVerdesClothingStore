@@ -2,10 +2,8 @@ package org.yearup.data.mysql;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.yearup.models.Product;
-
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.*;
@@ -37,7 +35,8 @@ public class ProductDao extends DaoBase implements org.yearup.data.ProductDao {
 
         //here is where setting to the sentinel value is handled, if null sert ? = -1(ignore)
         categoryId = categoryId == null ? -1 : categoryId;
-        minPrice = minPrice == null ? new BigDecimal("-1") : minPrice;
+        //change ignore to if null set to 0
+        minPrice = minPrice == null ?  BigDecimal.ZERO : minPrice;
         maxPrice = maxPrice == null ? new BigDecimal("-1") : maxPrice;
         subCategory = subCategory == null ? "" : subCategory;
 
@@ -50,44 +49,25 @@ public class ProductDao extends DaoBase implements org.yearup.data.ProductDao {
     @Override
     public List<Product> listByCategoryId(int categoryId) {
 
-        List<Product> products = new ArrayList<>();
+        String statement = """
+                SELECT *
+                FROM products
+                WHERE category_id = ?;
+                """;
 
-        String sql = "SELECT * FROM products WHERE category_id = ? ";
-
-        try (Connection connection = getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, categoryId);
-
-            ResultSet row = statement.executeQuery();
-
-            while (row.next()) {
-                Product product = mapRow(row);
-                products.add(product);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return products;
+        return jdbcTemplate.query(statement, mapRow, categoryId);
     }
 
 
     @Override
     public Product getById(int productId) {
-        String sql = "SELECT * FROM products WHERE product_id = ?";
-        try (Connection connection = getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, productId);
-
-            ResultSet row = statement.executeQuery();
-
-            if (row.next()) {
-                return mapRow(row);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return null;
+        String statement = """
+                SELECT *
+                FROM products
+                WHERE product_id = ?;
+                """;
+        //query returns the list, for object returns 1 object
+        return jdbcTemplate.queryForObject(statement, mapRow, productId);
     }
 
     @Override
@@ -129,16 +109,18 @@ public class ProductDao extends DaoBase implements org.yearup.data.ProductDao {
 
     @Override
     public void update(int productId, Product product) {
-        String sql = "UPDATE products" +
-                " SET name = ? " +
-                "   , price = ? " +
-                "   , category_id = ? " +
-                "   , description = ? " +
-                "   , subcategory = ? " +
-                "   , image_url = ? " +
-                "   , stock = ? " +
-                "   , featured = ? " +
-                " WHERE product_id = ?;";
+        String sql = """
+                 UPDATE products
+                 SET name = ?,
+                 price = ?,
+                 category_id = ?,
+                 description = ? ,
+                 subcategory = ?,
+                 image_url = ?,
+                 stock = ?,
+                 featured = ?
+                 WHERE product_id = ?;
+                 """;
 
         try (Connection connection = getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
