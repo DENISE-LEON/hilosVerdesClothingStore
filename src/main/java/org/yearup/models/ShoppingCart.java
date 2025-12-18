@@ -11,7 +11,6 @@ public class ShoppingCart
     //given the product id, give me the cart item
     private Map<Integer, ShoppingCartItem> items = new HashMap<>();
 
-
     public Map<Integer, ShoppingCartItem> getItems()
     {
         return items;

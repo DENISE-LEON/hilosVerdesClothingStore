@@ -33,9 +33,10 @@ public class ProductDao extends DaoBase implements org.yearup.data.ProductDao {
                 SELECT *
                 FROM products
                 WHERE (? = -1 OR category_id = ?)
-                AND (? = -1 OR price BETWEEN ? AND ?)
+                AND (price >= ? OR ? = -1)
+                AND (price <= ? OR ? = -1)
                 AND (? = '' OR subcategory = ?);""";
-
+ // AND (? = -1 OR price BETWEEN ? AND ?)
         //here is where setting to the sentinel value is handled, if null sert ? = -1(ignore)
         categoryId = categoryId == null ? -1 : categoryId;
         //change ignore to if null set to 0
@@ -45,7 +46,7 @@ public class ProductDao extends DaoBase implements org.yearup.data.ProductDao {
 
 
         //need to account for each placeholder(hence the repetiteveness)and make sure the order matches the query
-        return template.query(statement, mapRow, categoryId, categoryId, maxPrice, minPrice, maxPrice, subCategory, subCategory);
+        return template.query(statement, mapRow, categoryId, categoryId, minPrice, minPrice, maxPrice, maxPrice,subCategory, subCategory);
 
     }
 

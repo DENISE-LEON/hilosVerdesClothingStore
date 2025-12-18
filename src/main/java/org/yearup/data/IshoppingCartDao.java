@@ -9,11 +9,11 @@ public interface IshoppingCartDao {
     ShoppingCart getByUserId(int userId);
     // add additional method signatures here
     //add item
-    ShoppingCartItem addItemToCart(int userId,int prodId, int quantity);
+    ShoppingCartItem addItemToCart(int userId,int prodId);
 
     //delete item
     ShoppingCartItem deleteItem(int userId,int productId);
 
     //update item quantity
-    void updateQuantity(int userId,int productId, int quantity);
+    ShoppingCartItem updateQuantity(int userId,int productId);
 }
