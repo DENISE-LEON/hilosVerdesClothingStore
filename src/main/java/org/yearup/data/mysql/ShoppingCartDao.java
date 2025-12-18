@@ -9,6 +9,7 @@ import org.yearup.models.ShoppingCartItem;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Repository
 public class ShoppingCartDao extends DaoBase implements org.yearup.data.IshoppingCartDao {
@@ -23,12 +24,29 @@ public class ShoppingCartDao extends DaoBase implements org.yearup.data.Ishoppin
 
     @Override
     public ShoppingCart getByUserId(int userId) {
+        //to get the product info a join is needed
         String statement = """
-                SELECT *
-                FROM Shopping_cart
-                WHERE user_id = ?
+                SELECT p.product_id, p.name, p.price, p.category_id, p.description, p.subcategory, p.stock, p.featured, p.image_url
+                sc.user_id, sc.quantity
+                FROM Shopping_cart sc
+                JOIN Products p ON p.product_id = sc.product_id
+                WHERE user_id = ?;
                 """;
-        return null;
+
+        //get the list of items
+        List<ShoppingCartItem> items = template.query(statement, rowMapper, userId);
+        ShoppingCart cart = new ShoppingCart();
+
+        //manual looping is required to add the items in the list to the map
+        for (ShoppingCartItem item : items) {
+            cart.add(item);
+        }
+
+        //can condense line 37-43(getting list and looping) with streams:
+        //ShoppingCart cart = new ShoppingCart();
+        //template.query(statement, rowMapper, userId)
+        //  .forEach(cart::add);
+        return cart;
     }
 
 
@@ -40,7 +58,7 @@ public class ShoppingCartDao extends DaoBase implements org.yearup.data.Ishoppin
                 """;
 
 
-        return null;
+return null;
     }
 
     @Override
@@ -75,7 +93,7 @@ public class ShoppingCartDao extends DaoBase implements org.yearup.data.Ishoppin
         boolean isFeatured = results.getBoolean("featured");
         String imageUrl = results.getString("image_url");
 
-        Product product = new Product (productId, name, price, categoryId, description, subCategory, stock, isFeatured, imageUrl);
+        Product product = new Product(productId, name, price, categoryId, description, subCategory, stock, isFeatured, imageUrl);
 
         ShoppingCartItem item = new ShoppingCartItem();
         item.setProduct(product);
