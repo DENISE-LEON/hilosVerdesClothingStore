@@ -1,5 +1,6 @@
 package org.yearup.data.mysql;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -13,13 +14,15 @@ import java.util.List;
 
 @Repository
 public class ShoppingCartDao extends DaoBase implements org.yearup.data.IshoppingCartDao {
-    ProductDao productDao;
 
+    private final ProductDao productDao;
     private JdbcTemplate template;
 
-    public ShoppingCartDao(DataSource dataSource, JdbcTemplate template) {
+    @Autowired
+    public ShoppingCartDao(DataSource dataSource, JdbcTemplate template, ProductDao productDao) {
         super(dataSource);
         this.template = template;
+        this.productDao = productDao;
     }
 
     @Override
@@ -38,7 +41,7 @@ public class ShoppingCartDao extends DaoBase implements org.yearup.data.Ishoppin
         List<ShoppingCartItem> items = template.query(statement, rowMapper, userId);
         ShoppingCart cart = new ShoppingCart();
 
-        //manual looping is required to add the items in the list to the map
+        //manual looping is required to add the items in the list to the map bc rowmapper returns simple list
         for (ShoppingCartItem item : items) {
             cart.add(item);
         }
@@ -52,20 +55,21 @@ public class ShoppingCartDao extends DaoBase implements org.yearup.data.Ishoppin
 
 
     @Override
-    public ShoppingCartItem addItemToCart(int userId, ShoppingCartItem item) {
+    public ShoppingCartItem addItemToCart(int userId,int productId, int quantity) {
         String statement = """
-                INSERT INTO Shopping_cart
+                INSERT INTO Shopping_cart (user_id, product_id, quantity)
                 VALUES (?, ?, ?);
                 """;
-        template.update(statement,
-                userId,
-                item.getProductId(),
-                item.getQuantity());
+
+        template.update(statement, userId,productId, quantity);
+        ShoppingCartItem item = new ShoppingCartItem();
+        item.setQuantity(quantity);
+        item.setProduct(productDao.getById(productId));
         return item;
     }
 
     @Override
-    public ShoppingCartItem deleteItem(int userId, int productId) {
+    public ShoppingCartItem deleteItem(int userId ,int productId) {
         String statement = """
                 DELETE FROM Shopping_cart
                 WHERE user_id = ? AND product_id =?;
@@ -75,7 +79,7 @@ public class ShoppingCartDao extends DaoBase implements org.yearup.data.Ishoppin
     }
 
     @Override
-    public void updateQuantity(int userId, int productId, int quantity) {
+    public void updateQuantity(int userId,int productId, int quantity) {
         String statement = """
                 UPDATE shopping_cart
                 SET quantity = ?
