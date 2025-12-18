@@ -89,7 +89,7 @@ public class ShoppingCartDao extends DaoBase implements org.yearup.data.Ishoppin
 
 
     @Override
-    public ShoppingCartItem deleteItem(int userId, int productId) {
+    public ShoppingCart deleteItem(int userId, int productId) {
         String statement = """
                 DELETE FROM Shopping_cart
                 WHERE user_id = ? AND product_id =?;
@@ -99,7 +99,7 @@ public class ShoppingCartDao extends DaoBase implements org.yearup.data.Ishoppin
     }
 
     @Override
-    public ShoppingCartItem updateQuantity(int userId, int productId, int quantity) {
+    public ShoppingCart updateQuantity(int userId, int productId, int quantity) {
         String statement = """
                 UPDATE shopping_cart
                 SET quantity = ?
@@ -107,7 +107,7 @@ public class ShoppingCartDao extends DaoBase implements org.yearup.data.Ishoppin
                 """;
         template.update(statement, userId, productId, quantity);
 
-        return getByUserId(userId).get(productId);
+        return getByUserId(userId);
 
     }
 

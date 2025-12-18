@@ -12,8 +12,8 @@ public interface IshoppingCartDao {
     ShoppingCart addItemToCart(int userId,int prodId);
 
     //delete item
-    ShoppingCartItem deleteItem(int userId,int productId);
+    ShoppingCart deleteItem(int userId,int productId);
 
     //update item quantity
-    ShoppingCartItem updateQuantity(int userId,int productId, int quantity);
+    ShoppingCart updateQuantity(int userId,int productId, int quantity);
 }
