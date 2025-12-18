@@ -34,6 +34,7 @@ public class ShoppingCartDao extends DaoBase implements org.yearup.data.Ishoppin
                 """;
 
         //get the list of items
+        //object is collected from the rowmapper, all else is ignored by the list
         List<ShoppingCartItem> items = template.query(statement, rowMapper, userId);
         ShoppingCart cart = new ShoppingCart();
 
@@ -56,9 +57,11 @@ public class ShoppingCartDao extends DaoBase implements org.yearup.data.Ishoppin
                 INSERT INTO Shopping_cart
                 VALUES (?, ?, ?);
                 """;
-
-
-return null;
+        template.update(statement,
+                userId,
+                item.getProductId(),
+                item.getQuantity());
+        return item;
     }
 
     @Override
