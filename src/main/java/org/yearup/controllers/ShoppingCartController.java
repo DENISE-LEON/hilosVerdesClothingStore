@@ -67,7 +67,7 @@ public class ShoppingCartController {
             // use the shoppingcartDao to get all items in the cart and return the cart
             //check to see if item is already in shopping cart
 
-         return  shoppingCartDao.addToOrUpdateShoppingCart(userId,productId);
+         return  shoppingCartDao.addItemToCart(userId,productId);
 
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());

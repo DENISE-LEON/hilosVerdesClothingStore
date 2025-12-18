@@ -53,22 +53,43 @@ public class ShoppingCartDao extends DaoBase implements org.yearup.data.Ishoppin
         return cart;
     }
 
-
     @Override
-    public ShoppingCartItem addItemToCart(int userId,int productId) {
+    public ShoppingCart addItemToCart(int userId, int prodId) {
+         if (getByUserId(userId).contains(prodId)) {
+           return addProductToCartAgain(userId, prodId);
+
+        } else {
+           return addItemToCartFirstTime(userId, prodId);
+        }
+    }
+
+    public ShoppingCart addItemToCartFirstTime(int userId, int productId) {
         String statement = """
                 INSERT INTO Shopping_cart (user_id, product_id, quantity)
                 VALUES (?, ?, 1);
                 """;
 
-        template.update(statement, userId,productId);
-        ShoppingCartItem item = new ShoppingCartItem();
+      template.update(statement, userId, productId);
+      ShoppingCartItem item = new ShoppingCartItem();
         item.setProduct(productDao.getById(productId));
-        return item;
+
+        return getByUserId(userId);
     }
 
+    public ShoppingCart addProductToCartAgain(int userId, int productId) {
+        String statement = """
+                UPDATE shopping_cart
+                SET quantity = quantity + 1
+                WHERE user_id = ? AND product_id = ?;
+                """;
+        template.update(statement, userId, productId);
+        // ShoppingCart cart = new
+        return getByUserId(userId);
+    }
+
+
     @Override
-    public ShoppingCartItem deleteItem(int userId ,int productId) {
+    public ShoppingCartItem deleteItem(int userId, int productId) {
         String statement = """
                 DELETE FROM Shopping_cart
                 WHERE user_id = ? AND product_id =?;
@@ -78,13 +99,13 @@ public class ShoppingCartDao extends DaoBase implements org.yearup.data.Ishoppin
     }
 
     @Override
-    public ShoppingCartItem updateQuantity(int userId,int productId) {
+    public ShoppingCartItem updateQuantity(int userId, int productId, int quantity) {
         String statement = """
                 UPDATE shopping_cart
-                SET quantity = quantity + 1
+                SET quantity = ?
                 WHERE user_id = ? AND product_id = ?;
                 """;
-        template.update(statement, userId, productId);
+        template.update(statement, userId, productId, quantity);
 
         return getByUserId(userId).get(productId);
 
@@ -110,16 +131,4 @@ public class ShoppingCartDao extends DaoBase implements org.yearup.data.Ishoppin
         item.setQuantity(results.getInt("quantity"));
         return item;
     };
-
-    //helper method to add items to cart
-    public ShoppingCartItem addToOrUpdateShoppingCart(int userId, int productId){
-
-        if(getByUserId(userId).contains(productId)){
-            return updateQuantity(userId,productId);
-        } else {
-
-          return addItemToCart(userId, productId);
-        }
-//return getByUserId(userId);
-    }
 }
