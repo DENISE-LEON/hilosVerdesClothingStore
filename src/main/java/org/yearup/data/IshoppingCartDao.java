@@ -14,6 +14,9 @@ public interface IshoppingCartDao {
     //delete item
     ShoppingCart deleteItem(int userId,int productId);
 
+    //delete all items
+    ShoppingCart deleteAllItems(int userId);
+
     //update item quantity
     ShoppingCart updateQuantity(int userId,int productId, int quantity);
 }

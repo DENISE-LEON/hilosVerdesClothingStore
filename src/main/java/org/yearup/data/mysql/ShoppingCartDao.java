@@ -15,11 +15,11 @@ import java.util.List;
 @Repository
 public class ShoppingCartDao extends DaoBase implements org.yearup.data.IshoppingCartDao {
 
-    private final ProductDao productDao;
+    private final IProductDao productDao;
     private JdbcTemplate template;
 
     @Autowired
-    public ShoppingCartDao(DataSource dataSource, JdbcTemplate template, ProductDao productDao) {
+    public ShoppingCartDao(DataSource dataSource, JdbcTemplate template, IProductDao productDao) {
         super(dataSource);
         this.template = template;
         this.productDao = productDao;
@@ -95,7 +95,19 @@ public class ShoppingCartDao extends DaoBase implements org.yearup.data.Ishoppin
                 WHERE user_id = ? AND product_id =?;
                 """;
 
-        return null;
+        template.update(statement, userId, productId);
+        return getByUserId(userId);
+    }
+
+    @Override
+    public ShoppingCart deleteAllItems(int userId) {
+        String statement = """
+                DELETE FROM Shopping_cart
+                WHERE user_id = ?
+                """;
+
+        template.update(statement, userId);
+        return getByUserId(userId);
     }
 
     @Override

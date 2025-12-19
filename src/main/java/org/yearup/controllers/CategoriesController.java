@@ -3,8 +3,8 @@ package org.yearup.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.yearup.data.IcategoryDao;
-import org.yearup.data.ProductDao;
+import org.yearup.data.IProductDao;
+import org.yearup.data.mysql.CategoryDao;
 import org.yearup.models.Category;
 import org.yearup.models.Product;
 
@@ -20,13 +20,13 @@ import java.util.List;
 //cross origin allows JavaScript on https://domain-a.com to fetch data from https://domain-b.com, which browsers normally block
 @CrossOrigin
 public class CategoriesController {
-    private IcategoryDao categoryDao;
-    private ProductDao productDao;
+    private CategoryDao categoryDao;
+    private IProductDao productDao;
 
     //even though field injection works in my case(small project, no unit testing)
     // constructor injection is best practice( good for testing and long term maintainability)
     @Autowired
-    public CategoriesController(IcategoryDao categoryDao, ProductDao productDao) {
+    public CategoriesController(CategoryDao categoryDao, IProductDao productDao) {
         this.categoryDao = categoryDao;
         this.productDao = productDao;
     }

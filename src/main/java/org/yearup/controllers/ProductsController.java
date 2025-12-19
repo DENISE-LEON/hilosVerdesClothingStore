@@ -6,7 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.yearup.models.Product;
-import org.yearup.data.ProductDao;
+import org.yearup.data.IProductDao;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,10 +16,10 @@ import java.util.List;
 @CrossOrigin
 public class ProductsController
 {
-    private ProductDao productDao;
+    private IProductDao productDao;
 
     @Autowired
-    public ProductsController(ProductDao productDao)
+    public ProductsController(IProductDao productDao)
     {
         this.productDao = productDao;
     }

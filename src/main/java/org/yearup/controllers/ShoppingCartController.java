@@ -5,12 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.yearup.data.ProductDao;
-import org.yearup.data.IshoppingCartDao;
+import org.yearup.data.IProductDao;
 import org.yearup.data.UserDao;
 import org.yearup.data.mysql.ShoppingCartDao;
 import org.yearup.models.ShoppingCart;
-import org.yearup.models.ShoppingCartItem;
 import org.yearup.models.User;
 
 import java.security.Principal;
@@ -25,11 +23,11 @@ public class ShoppingCartController {
     // a shopping cart requires
     private ShoppingCartDao shoppingCartDao;
     private UserDao userDao;
-    private ProductDao productDao;
+    private IProductDao productDao;
 
     //constructor for injection
     @Autowired
-    public ShoppingCartController(ShoppingCartDao shoppingCartDao, UserDao userDao, ProductDao productDao) {
+    public ShoppingCartController(ShoppingCartDao shoppingCartDao, UserDao userDao, IProductDao productDao) {
         this.shoppingCartDao = shoppingCartDao;
         this.userDao = userDao;
         this.productDao = productDao;
@@ -67,7 +65,7 @@ public class ShoppingCartController {
             // use the shoppingcartDao to get all items in the cart and return the cart
             //check to see if item is already in shopping cart
 
-         return  shoppingCartDao.addItemToCart(userId,productId);
+            return shoppingCartDao.addItemToCart(userId, productId);
 
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
@@ -79,7 +77,26 @@ public class ShoppingCartController {
     // https://localhost:8080/cart/products/15 (15 is the productId to be updated)
     // the BODY should be a ShoppingCartItem - quantity is the only value that will be updated
     @PutMapping("{productId}")
-    public void updateQuantity(@PathVariable int productId,  Principal principal) {
+    public ShoppingCart updateQuantity(@PathVariable int productId, @RequestBody int quantity, Principal principal) {
+
+        try {
+            // get the currently logged in username
+            String userName = principal.getName();
+            // find database user by userId
+            User user = userDao.getByUserName(userName);
+            int userId = user.getId();
+
+            return shoppingCartDao.updateQuantity(userId, productId, quantity);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+
+    // add a DELETE method to clear all products from the current users cart
+    // https://localhost:8080/cart
+    @DeleteMapping()
+    public ShoppingCart deleteAll(Principal principal) {
 
         try {
             // get the currently logged in username
@@ -89,14 +106,26 @@ public class ShoppingCartController {
             int userId = user.getId();
 
             // use the shoppingcartDao to get all items in the cart and return the cart
-            shoppingCartDao.updateQuantity(userId, productId);
+            return shoppingCartDao.deleteAllItems(userId);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
+    @DeleteMapping("{productId}")
+    public ShoppingCart deleteItem(@PathVariable int productId, Principal principal) {
 
-    // add a DELETE method to clear all products from the current users cart
-    // https://localhost:8080/cart
+        try {
+            // get the currently logged in username
+            String userName = principal.getName();
+            // find database user by userId
+            User user = userDao.getByUserName(userName);
+            int userId = user.getId();
 
+            // use the shoppingcartDao to get all items in the cart and return the cart
+            return shoppingCartDao.deleteItem(userId, productId);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
 }
