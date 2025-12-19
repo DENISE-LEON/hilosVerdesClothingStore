@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class IProductDao extends DaoBase implements org.yearup.data.IProductDao {
+public class ProductDao extends DaoBase implements org.yearup.data.IProductDao {
     private JdbcTemplate template;
 
-    public IProductDao(JdbcTemplate template, DataSource dataSource) {
+    public ProductDao(JdbcTemplate template, DataSource dataSource) {
         super(dataSource);
         this.template = template;
 
@@ -148,7 +148,7 @@ public class IProductDao extends DaoBase implements org.yearup.data.IProductDao 
         template.update(statement, productId);
     }
 
-    protected RowMapper<Product> mapRow = (row, rowNum) -> {
+    public RowMapper<Product> mapRow = (row, rowNum) -> {
         int productId = row.getInt("product_id");
         String name = row.getString("name");
         BigDecimal price = row.getBigDecimal("price");

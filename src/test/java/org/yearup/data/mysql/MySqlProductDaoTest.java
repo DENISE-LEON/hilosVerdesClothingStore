@@ -13,13 +13,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 class MySqlProductDaoTest extends BaseDaoTestClass
 {
-    private IProductDao dao;
+    private ProductDao dao;
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     public void setup()
     {
-        dao = new IProductDao(jdbcTemplate,dataSource);
+        dao = new ProductDao(jdbcTemplate,dataSource);
     }
 
     @Test

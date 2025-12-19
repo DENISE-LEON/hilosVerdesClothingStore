@@ -5,8 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.yearup.data.IProductDao;
 import org.yearup.data.UserDao;
+import org.yearup.data.mysql.ProductDao;
 import org.yearup.data.mysql.ShoppingCartDao;
 import org.yearup.models.ShoppingCart;
 import org.yearup.models.User;
@@ -23,11 +23,11 @@ public class ShoppingCartController {
     // a shopping cart requires
     private ShoppingCartDao shoppingCartDao;
     private UserDao userDao;
-    private IProductDao productDao;
+    private ProductDao productDao;
 
     //constructor for injection
     @Autowired
-    public ShoppingCartController(ShoppingCartDao shoppingCartDao, UserDao userDao, IProductDao productDao) {
+    public ShoppingCartController(ShoppingCartDao shoppingCartDao, UserDao userDao, ProductDao productDao) {
         this.shoppingCartDao = shoppingCartDao;
         this.userDao = userDao;
         this.productDao = productDao;
@@ -42,7 +42,7 @@ public class ShoppingCartController {
             String userName = principal.getName();
             // find database user by userId
             User user = userDao.getByUserName(userName);
-            int userId = user.getId();
+            Integer userId = user.getId();
 
             // use the shoppingcartDao to get all items in the cart and return the cart
             return shoppingCartDao.getByUserId(userId);
@@ -60,7 +60,7 @@ public class ShoppingCartController {
             String userName = principal.getName();
             // find database user by userId
             User user = userDao.getByUserName(userName);
-            int userId = user.getId();
+            Integer userId = user.getId();
 
             // use the shoppingcartDao to get all items in the cart and return the cart
             //check to see if item is already in shopping cart
@@ -83,7 +83,7 @@ public class ShoppingCartController {
             String userName = principal.getName();
             // find database user by userId
             User user = userDao.getByUserName(userName);
-            int userId = user.getId();
+            Integer userId = user.getId();
             return shoppingCartDao.updateQuantity(userId, productId, quantity);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
@@ -101,7 +101,7 @@ public class ShoppingCartController {
             String userName = principal.getName();
             // find database user by userId
             User user = userDao.getByUserName(userName);
-            int userId = user.getId();
+            Integer userId = user.getId();
 
             // use the shoppingcartDao to get all items in the cart and return the cart
             return shoppingCartDao.deleteAllItems(userId);
@@ -118,7 +118,7 @@ public class ShoppingCartController {
             String userName = principal.getName();
             // find database user by userId
             User user = userDao.getByUserName(userName);
-            int userId = user.getId();
+            Integer userId = user.getId();
 
             // use the shoppingcartDao to get all items in the cart and return the cart
             return shoppingCartDao.deleteItem(userId, productId);

@@ -15,11 +15,11 @@ import java.util.List;
 @Repository
 public class ShoppingCartDao extends DaoBase implements org.yearup.data.IshoppingCartDao {
 
-    private final IProductDao productDao;
+    private final ProductDao productDao;
     private JdbcTemplate template;
 
     @Autowired
-    public ShoppingCartDao(DataSource dataSource, JdbcTemplate template, IProductDao productDao) {
+    public ShoppingCartDao(DataSource dataSource, JdbcTemplate template, ProductDao productDao) {
         super(dataSource);
         this.template = template;
         this.productDao = productDao;

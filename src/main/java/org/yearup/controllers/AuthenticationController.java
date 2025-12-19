@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import org.yearup.models.Profile;
-import org.yearup.data.ProfileDao;
+import org.yearup.data.IprofileDao;
 import org.yearup.data.UserDao;
 import org.yearup.models.authentication.LoginDto;
 import org.yearup.models.authentication.LoginResponseDto;
@@ -31,9 +31,9 @@ public class AuthenticationController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private UserDao userDao;
-    private ProfileDao profileDao;
+    private IprofileDao profileDao;
 
-    public AuthenticationController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, UserDao userDao, ProfileDao profileDao) {
+    public AuthenticationController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, UserDao userDao, IprofileDao profileDao) {
         this.tokenProvider = tokenProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.userDao = userDao;
