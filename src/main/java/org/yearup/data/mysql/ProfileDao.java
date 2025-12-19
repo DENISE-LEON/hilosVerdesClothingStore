@@ -3,9 +3,7 @@ package org.yearup.data.mysql;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
-import org.yearup.models.Product;
 import org.yearup.models.Profile;
 
 import javax.sql.DataSource;
@@ -99,7 +97,6 @@ public class ProfileDao extends DaoBase implements org.yearup.data.IprofileDao {
         String state = resultSet.getString("state");
         String zip = resultSet.getString("zip");
 
-        Profile profile = new Profile(userId, firstName, lastName, phone, email, address, city,state, zip);
-        return profile;
+            return new Profile(userId, firstName, lastName, phone, email, address, city,state, zip);
     };
 }

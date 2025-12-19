@@ -6,19 +6,22 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.yearup.models.OrderLine;
 import org.yearup.models.ShoppingCartItem;
+
+import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 
 
 
 @Repository
-public class OrderLineDao {
+public class OrderLineDao extends DaoBase implements IorderLineDao{
     JdbcTemplate template;
     ShoppingCartDao shoppingCartDao;
 
 
 
-    public OrderLineDao(JdbcTemplate template, ShoppingCartDao shoppingCartDao) {
+    public OrderLineDao(DataSource dataSource,JdbcTemplate template, ShoppingCartDao shoppingCartDao) {
+        super(dataSource);
         this.template = template;
         this.shoppingCartDao = shoppingCartDao;
 

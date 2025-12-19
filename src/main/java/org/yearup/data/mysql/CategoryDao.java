@@ -110,9 +110,8 @@ public class CategoryDao extends DaoBase implements IcategoryDao {
         int categoryId = resultSet.getInt("category_id");
         String name = resultSet.getString("name");
         String description = resultSet.getString("description");
-        //  Category category =
+
         return new Category(categoryId, name, description);
-        // return category;
     };
 
 
