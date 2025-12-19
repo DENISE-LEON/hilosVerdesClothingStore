@@ -78,14 +78,12 @@ public class ShoppingCartController {
     // the BODY should be a ShoppingCartItem - quantity is the only value that will be updated
     @PutMapping("{productId}")
     public ShoppingCart updateQuantity(@PathVariable int productId, @RequestBody int quantity, Principal principal) {
-
         try {
             // get the currently logged in username
             String userName = principal.getName();
             // find database user by userId
             User user = userDao.getByUserName(userName);
             int userId = user.getId();
-
             return shoppingCartDao.updateQuantity(userId, productId, quantity);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());

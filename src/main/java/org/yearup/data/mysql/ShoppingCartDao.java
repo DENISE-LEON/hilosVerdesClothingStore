@@ -53,6 +53,7 @@ public class ShoppingCartDao extends DaoBase implements org.yearup.data.Ishoppin
         return cart;
     }
 
+    //determines which method is called based on if the item is already in the cart
     @Override
     public ShoppingCart addItemToCart(int userId, int prodId) {
          if (getByUserId(userId).contains(prodId)) {
@@ -83,7 +84,6 @@ public class ShoppingCartDao extends DaoBase implements org.yearup.data.Ishoppin
                 WHERE user_id = ? AND product_id = ?;
                 """;
         template.update(statement, userId, productId);
-        // ShoppingCart cart = new
         return getByUserId(userId);
     }
 
@@ -117,7 +117,7 @@ public class ShoppingCartDao extends DaoBase implements org.yearup.data.Ishoppin
                 SET quantity = ?
                 WHERE user_id = ? AND product_id = ?;
                 """;
-        template.update(statement, userId, productId, quantity);
+        template.update(statement,quantity, userId, productId);
 
         return getByUserId(userId);
 
