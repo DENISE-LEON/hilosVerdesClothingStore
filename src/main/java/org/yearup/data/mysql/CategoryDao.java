@@ -63,14 +63,14 @@ public class CategoryDao extends DaoBase implements IcategoryDao {
         //since the generated key is wanted lambda and prepared statements are needed
         template.update
                 (connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                   statement,
-                    Statement.RETURN_GENERATED_KEYS
-            );
-            ps.setString(1, category.getName());
-            ps.setString(2, category.getDescription());
-            return ps;
-        }, keyHolder);
+                    PreparedStatement ps = connection.prepareStatement(
+                            statement,
+                            Statement.RETURN_GENERATED_KEYS
+                    );
+                    ps.setString(1, category.getName());
+                    ps.setString(2, category.getDescription());
+                    return ps;
+                }, keyHolder);
 
         int genKey = keyHolder.getKey().intValue();
 
@@ -89,11 +89,11 @@ public class CategoryDao extends DaoBase implements IcategoryDao {
                 """;
 
         template.update(
-            statement,
-            category.getName(),
-            category.getDescription(),
-            categoryId
-    );
+                statement,
+                category.getName(),
+                category.getDescription(),
+                categoryId
+        );
     }
 
     @Override
@@ -110,8 +110,9 @@ public class CategoryDao extends DaoBase implements IcategoryDao {
         int categoryId = resultSet.getInt("category_id");
         String name = resultSet.getString("name");
         String description = resultSet.getString("description");
-        Category category = new Category(categoryId, name, description);
-        return category;
+        //  Category category =
+        return new Category(categoryId, name, description);
+        // return category;
     };
 
 

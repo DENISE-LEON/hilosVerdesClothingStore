@@ -1,19 +1,22 @@
 package org.yearup.data.mysql;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.yearup.models.Product;
 import org.yearup.models.Profile;
 
 import javax.sql.DataSource;
 import java.sql.*;
 
-@Component
+@Repository
 public class ProfileDao extends DaoBase implements org.yearup.data.IprofileDao {
 
     JdbcTemplate template;
 
+    @Autowired
     public ProfileDao(DataSource dataSource, JdbcTemplate template) {
         super(dataSource);
         this.template = template;

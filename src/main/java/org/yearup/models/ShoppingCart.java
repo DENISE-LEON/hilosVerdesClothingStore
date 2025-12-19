@@ -36,8 +36,7 @@ public class ShoppingCart
         return items.get(productId);
     }
 
-    public BigDecimal getTotal()
-    {
+    public BigDecimal getTotal() {
         BigDecimal total = items.values()
                                 .stream()
                                 .map(i -> i.getLineTotal())
@@ -45,6 +44,15 @@ public class ShoppingCart
 
         return total;
     }
+
+//    public BigDecimal discountAmt() {
+//        BigDecimal total = getTotal();
+//        BigDecimal discount = new BigDecimal(0);
+//
+//       if(total.doubleValue() <= 50) {
+//           total = discount.subtract(total * 0.05)
+//        }
+//    }
 
 
 

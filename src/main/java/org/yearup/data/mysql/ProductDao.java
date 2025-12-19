@@ -6,16 +6,14 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.yearup.models.Product;
-
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 public class ProductDao extends DaoBase implements org.yearup.data.IProductDao {
-    private JdbcTemplate template;
+    private final JdbcTemplate template;
 
     public ProductDao(JdbcTemplate template, DataSource dataSource) {
         super(dataSource);
@@ -25,8 +23,6 @@ public class ProductDao extends DaoBase implements org.yearup.data.IProductDao {
 
     @Override
     public List<Product> search(Integer categoryId, BigDecimal minPrice, BigDecimal maxPrice, String subCategory) {
-        List<Product> products = new ArrayList<>();
-
         //? = -1:ignore filter(sentinel val)
         //put the ignores first so if val = -1 sql ignores filter completely, prevents invalid expressions from running
         String statement = """
